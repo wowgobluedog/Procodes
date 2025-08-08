@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Amazon Promo Codes with Auto Affiliate Tag</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f8f9fa; margin: 0; padding: 0; }
+    h1 { text-align: center; padding: 20px; background: #232f3e; color: white; }
+    .promo-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px; }
+    .promo-card { background: white; border: 1px solid #ddd; border-radius: 8px; width: 280px; padding: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .promo-card h3 { font-size: 18px; }
+    .promo-card p { font-size: 14px; }
+    .promo-card a { display: inline-block; margin-top: 10px; background: #ff9900; color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+  <h1>Amazon Promo Codes</h1>
+  <div class="promo-container" id="promoContainer"></div>
+
+  <script>
+    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTSb2FBLmCj_z8hyGv0y8BZwkgoILgcqciPNzSYLOyfYemGwO9E0MEW2-RlL1ixL2FtKIa44O2zW6RV/pub?output=csv";
+    const affiliateTag = "onamzkri00aa3-20";
+
+    // Function to append affiliate tag to Amazon URLs
+    function addAffiliateTag(url) {
+      try {
+        const urlObj = new URL(url);
+        // Only add tag if not present
+        if (!urlObj.searchParams.has('tag')) {
+          urlObj.searchParams.set('tag', affiliateTag);
+        }
+        return urlObj.toString();
+      } catch (e) {
+        // If invalid URL, return as-is
+        return url;
+      }
+    }
+
+    fetch(sheetURL)
+      .then(response => response.text())
+      .then(data => {
+        const rows = data.split("\n").slice(1); // skip header
+        const container = document.getElementById("promoContainer");
+
+        rows.forEach(row => {
+          const cols = row.split(",");
+          if (cols.length >= 3) {
+            const title = cols[0];
+            const description = cols[1];
+            let link = cols[2].trim();
+
+            // Append affiliate tag to link
+            link = addAffiliateTag(link);
+
+            const card = document.createElement("div");
+            card.className = "promo-card";
+            card.innerHTML = `
+              <h3>${title}</h3>
+              <p>${description}</p>
+              <a href="${link}" target="_blank" rel="noopener noreferrer">Shop Now</a>
+            `;
+            container.appendChild(card);
+          }
+        });
+      });
+  </script>
+</body>
+</html>
